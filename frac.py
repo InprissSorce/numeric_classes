@@ -1,5 +1,3 @@
-# Helpter functions
-
 def approx_eq(f1, f2):
   return abs(f1 - f2) < 0.0000001
 
@@ -21,7 +19,7 @@ def reduce(a, b):
     q, p = p, q % p
   return (a // p, b // p)
 
-def findLCD(a, b):
+def lcm(a, b):
   '''
   Parameters: integers a and b that represent the denominators of two fractions
   Output: integer p that represents the least common denominator of those two fractions
@@ -47,6 +45,7 @@ class frac:
     # No zero denominator.
     if d == 0:
       raise ValueError
+    # 0 is represented as 0/1
     if n == 0:
       self.numerator = 0
       self.denominator = 1  
@@ -100,24 +99,14 @@ class frac:
     if isinstance(second, float):
       return float(self) + second    
     elif isinstance(second, int):
-      second = frac(second, 1)
-    lcd = findLCD(self.denominator, second.denominator)
-    firstNumer = (lcd // self.denominator) * self.numerator
-    secondNumer = (lcd // second.denominator) * second.numerator
-    return frac(firstNumer + secondNumer, lcd)
-  
-  def __radd__(self, first):
-    # self is the frac on the right
-    # first is the non-frac on the left
-    return self + first
+      second = frac(second)
+    lcd = lcm(self.denominator, second.denominator)
+    left_numer = (lcd // self.denominator) * self.numerator
+    right_numer = (lcd // second.denominator) * second.numerator
+    return frac(left_numer + right_numer, lcd)
 
   def __sub__(self, second):
-    return self + -second
-    
-  def __rsub__(self, first):
-    # self is the frac on the right
-    # first is the non-frac on the left
-    return -(self - first)
+    return self + -second  # Subtraction is addition of the negative
 
   def __mul__(self, second):
     if isinstance(second, float):
@@ -125,18 +114,24 @@ class frac:
     elif isinstance(second, int):
       second = frac(second)
     return frac(self.numerator * second.numerator, self.denominator * second.denominator)
-  
-  def __rmul__(self, first):
-    # self is the frac on the right
-    # first is the non-frac on the left
-    return self * first
-    
+
   def __truediv__(self, second):
     if isinstance(second, float):
       return float(self) / second
     elif isinstance(second, int):
       second = frac(second)
-    return self * second.recip() 
+    return self * second.recip()  # Division is multiplication by reciprocal
+
+  # For each of the __r methods, self is the frac on the right
+  # and first is the non-frac on the left.
+  def __radd__(self, first):
+    return self + first  # first + self = self + first
+
+  def __rsub__(self, first):
+    return -(self - first)  # first - self = -(self - first)
+
+  def __rmul__(self, first):
+    return self * first  # first * self = self * first
   
   def __rtruediv__(self, first):
     # self is the frac on the right
@@ -144,14 +139,16 @@ class frac:
     if isinstance(first, float):
       return first / float(self)
     else:
-      return (self / first).recip()
+      return (self / first).recip()  # first/self = 1/(self/first)
 
   def __pow__(self, power):
     if not isinstance(power, int):
       raise TypeError
     elif power >= 0:
+      # (a/b)**n = (a**n)/(b**n)
       return frac(self.numerator ** power, self.denominator ** power)
     else:
+      # (a/b)**(-n) = (b/a)**n
       return frac(self.denominator ** abs(power), self.numerator ** abs(power))
   
   def __float__(self):

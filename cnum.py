@@ -1,12 +1,21 @@
-import math
+import math, frac
 
 def approx_eq(a, b, t):
-    # compare a and b with tolerance t
+    # test a and b for equality with tolerance t
     return abs(a - b) < t
+
+def is_numer(*args):
+    numeric_types = [int, float, frac.frac]
+    for arg in args:
+        if type(arg) not in numeric_types:
+            return False
+    return True
 
 class cnum():
 
-    def __init__(self, real, imag):
+    def __init__(self, real, imag = 0):
+        if not is_numer(real, imag):
+            raise TypeError
         self.rp = real
         self.ip = imag
 
@@ -22,7 +31,7 @@ class cnum():
 
     def __mul__(self, second):
         if isinstance(second, (int, float)):
-            second = cnum(second, 0)
+            second = cnum(second)
         a, b = self.rp, self.ip
         c, d = second.rp, second.ip
         return cnum(a*c - b*d, a*d + b*c)
@@ -30,14 +39,14 @@ class cnum():
     def __rmul__(self, second):
         # handle cases of form real * complex
         # self is complex (the right operand), second is real (the left operand)
-        second = cnum(second, 0)
+        second = cnum(second)
         a, b = self.rp, self.ip
         c, d = second.rp, second.ip
         return cnum(a*c - b*d, a*d + b*c)
 
     def __add__(self, second):
         if isinstance(second, (int, float)):
-            second = cnum(second, 0)
+            second = cnum(second)
         a = self.rp + second.rp
         b = self.ip + second.ip
         return cnum(a, b)
@@ -45,10 +54,7 @@ class cnum():
     def __radd__(self, second):
         # handle cases of form real + complex
         # self is complex (the right operand), second is real (the left operand)
-        second = cnum(second, 0)
-        a, b = self.rp, self.ip
-        c, d = second.rp, second.ip
-        return cnum(a + c, b + d) 
+        return self + second
 
     def __sub__(self, second):
         return self + -1 * second
@@ -56,7 +62,7 @@ class cnum():
     def __rsub__(self, second):
         # handle cases of form real - complex
         # self is complex (the right operand), second is real (the left operand)
-        second = cnum(second, 0)
+        second = cnum(second)
         return second + -1 * self
 
     def __truediv__(self, second):
@@ -76,7 +82,6 @@ class cnum():
         bottom = self.rp ** 2 + self.ip ** 2
         a, b = top.rp / bottom, top.ip / bottom
         return cnum(a, b)
-
 
     def __pow__(self, power):
         if power == 0:

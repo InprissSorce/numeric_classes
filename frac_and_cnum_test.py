@@ -11,15 +11,15 @@ print("Comp Nums with Frac Parts")
 print(c1, c2)
 print()
 
-print("Add")
+print("Addition")
 print(c1 + c2)
 print()
 
-print("Subtract")
+print("Subtraction")
 print(c1 - c2)
 print()
 
-print("Multiply")
+print("Multiplication")
 print(c1 * c2)
 print()
 
