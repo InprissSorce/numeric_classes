@@ -1,3 +1,6 @@
+# Create complex numbers.
+# Perform operations with them.
+
 import cnum
 
 # Create and print a complex number
